@@ -1,9 +1,6 @@
-#_ = require 'underscore-plus'
 {$, $$, EditorView, View} = require 'atom'
 
-
-#_.extend View,
-View.colorizedCodeBlock = (cssClass, grammarScopeName, code) ->
+View.colorizedCodeBlock ?= (cssClass, grammarScopeName, code) ->
   console.warn cssClass, grammarScopeName, code
   editorBlock = $$ ->
     @pre class: cssClass+' editor-colors editor', ''

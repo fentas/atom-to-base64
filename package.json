@@ -1,5 +1,5 @@
 {
-  "name": "to base64",
+  "name": "to-base64",
   "main": "./lib/to-base64",
   "version": "0.1.0",
   "description": "Converts data to base64, furthermore it creates a data url if needed.",

@@ -1,3 +1,5 @@
+{$} = require 'atom'
+
 ToBase64View = null
 
 url = require 'url'
@@ -12,16 +14,17 @@ module.exports =
 
       ToBase64View ?= require './to-base64-view'
       new ToBase64View(pathToOpen: pathname)
-    #@toBase64View = new ToBase64View(state.toBase64ViewState)
 
     atom.workspaceView.command 'to-base64:view', ->
-      if atom.workspace.activePaneItem?
-        uri = atom.workspace.activePaneItem.getUri()
-        console.info(uri);
+      selected = $('.tree-view .file.selected')?.view()
+      if selected
+        uri = selected.getPath()
         if uri and fs.existsSync(uri)
           atom.workspaceView.open("tobase64://#{uri}")
         else
           console.warn "File (#{uri}) does not exists"
+      else
+        console.warn "No file selected"
 
   #deactivate: ->
   #  @toBase64View.destroy()

@@ -5,7 +5,7 @@ http = require 'http'
 
 path = require 'path'
 fs = require 'fs'
-#mime = require 'mime'
+mime = require 'mime'
 
 module.exports =
 class ToBase64
@@ -33,7 +33,7 @@ class ToBase64
         callback.call @, error
 
     else if fs.existsSync(string)
-      #@mime = mime.lookup(string)
+      @mime = mime.lookup(string)
       fs.readFile string, (err, data) =>
         return callback.call @, err if err
         @_ = @encode data
