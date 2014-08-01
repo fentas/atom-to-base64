@@ -1,7 +1,6 @@
 {$, $$, EditorView, View} = require 'atom'
 
-View.colorizedCodeBlock ?= (cssClass, grammarScopeName, code) ->
-  console.warn cssClass, grammarScopeName, code
+View.colorizedCodeBlock = (cssClass, grammarScopeName, code) ->
   editorBlock = $$ ->
     @pre class: cssClass+' editor-colors editor', ''
 
@@ -17,4 +16,5 @@ View.colorizedCodeBlock ?= (cssClass, grammarScopeName, code) ->
       return unless grammar.scopeName == grammarScopeName
       refreshHtml(grammar)
 
+  console.warn editorBlock
   @subview '__', editorBlock
