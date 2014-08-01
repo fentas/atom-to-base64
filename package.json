@@ -1,0 +1,15 @@
+{
+  "name": "to base64",
+  "main": "./lib/to-base64",
+  "version": "0.1.0",
+  "description": "Converts data to base64, furthermore it creates a data url if needed.",
+  "activationEvents": ["to-base64:view"],
+  "repository": "https://github.com/fentas/atom-to-base64",
+  "license": "AGPLv3",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+    "mime": "~1.2.11"
+  }
+}

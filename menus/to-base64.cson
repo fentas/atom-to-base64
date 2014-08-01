@@ -1,0 +1,16 @@
+# See https://atom.io/docs/latest/creating-a-package#menus for more details
+'context-menu':
+  '.tree-view .file':
+      'to base64': 'to-base64:view'
+
+#'menu': [
+#  {
+#    'label': 'Packages'
+#    'submenu': [
+#      'label': 'to base64'
+#      'submenu': [
+#        { 'label': 'Toggle', 'command': 'to-base64:toggle' }
+#      ]
+#    ]
+#  }
+#]
