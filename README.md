@@ -1,9 +1,14 @@
 # to-base64 package
+Converts any data to base64, furthermore it creates different views like data url if possible.
 
-A short description of your package.
+![A screenshot of my spankin' package](http://git.jguth.grus.uberspace.de/atom-to-base64/to-base64:view.gif)
 
-![A screenshot of your spankin' package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+## Customization
+What kind of view you get is totally customizable.
+Have a look into: `path/to/packages/to-base64/lib/mime-types.cson`
 
+## Current state
+It's still under construction and other features will come.
 
 ## Donations
 Please help me to finance my every cup of tea. Every coin is appreciated.

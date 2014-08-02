@@ -8,18 +8,52 @@
 #       'content':  # content...
 #
 # You can use following vars in content string
+#
+# @name  : name
 # @mime  : mime type
-# @width : width in px
-# @height: height in px
+# @base64: base64 encode
+# @_     : extra information ~ not reliable (like parsed name, font weight etc)
 # @get('<<mime type>>', '<<method>>') -> gives parsed content of method
+#
+# \n ~ new line
+# \t ~ intend
+# if you use ''' use #{'  '} for intend
 #
 'image':
   #default
   '_':
     'data':
-      'grammar': 'source.css'
+      'grammar': 'text.plain'
       'content': 'data:#{@mime};base64,#{@base64}'
     'css':
       'grammar': 'source.css'
-      'content': 'div.image {\n\twidth: #{@width};\n\theight: #{@height};\n\tbackground-image: URL("#{@get("image","data")}")\n}'
-  #subtype
+      'content': '''div.image {
+        #{'  '}width: #{@_.width}px;
+        #{'  '}height: #{@_.height}px;
+        #{'  '}background-image: URL("#{@get("image","data")}")\n}'''
+    'xhtml':
+      'grammar': 'text.html.basic'
+      'content': '<img src="#{@get("image","data")}" />'
+
+'application':
+  'font-woff':
+    'data':
+      'grammar': 'text.plain'
+      'content': 'data:#{@mime};base64,#{@base64}'
+    'css':
+      'grammar': 'source.css'
+      'content': '''@font-face {
+        #{'  '}font-family: "#{@_.name}";
+        #{'  '}font-weight: #{@_.weight};
+        #{'  '}src: local("#{@_.name}"), URL("#{@get("application/font-woff","data")}") format("woff");\n}'''
+
+  'x-font-ttf':
+    'data':
+      'grammar': 'text.plain'
+      'content': 'data:#{@mime};base64,#{@base64}'
+    'css':
+      'grammar': 'source.css'
+      'content': '''@font-face {
+        #{'  '}font-family: "#{@_.name}";
+        #{'  '}font-weight: #{@_.weight};
+        #{'  '}src: local("#{@_.name}"), URL("#{@get("application/x-font-ttf","data")}") format("truetype");\n}'''

@@ -1,4 +1,4 @@
-
+{$} = require 'atom'
 
 url = require 'url'
 http = require 'http'
@@ -6,16 +6,32 @@ http = require 'http'
 path = require 'path'
 fs = require 'fs'
 mime = require 'mime'
+sizeOf = require 'image-size';
 
 module.exports =
 class ToBase64
   base64: null
 
-  mime  : null
-  width : null
-  height: null
+  _:
+    parse: ->
+      @_.name = @name
+        .replace(/^([a-z_]+)(\d+)?$/i, (m, name)->
+          name.replace(/_/g, ' ')
+          .replace(/(?:^|\s)([a-z])/ig, (m, f)->
+            ' '+f.toUpperCase() ))
+        .trim()
+      @_.weight = @name.replace(/^([a-z_]+)(\d+)?$/i, "$2")
+      @_.weight = 'normal' if ! /^\d+$/.test @_.weight
+      @_.width ?= ''
+      @_.height ?= ''
+
+  path  : ''
+  name  : ''
+  mime  : ''
 
   constructor: (string, callback) ->
+    @path = string
+
     if /(https?|ftp):/.test url.parse(string).protocol
       http.get url.parse(string), (response) =>
         return callback.call @, response unless response.statusCode is 200
@@ -27,15 +43,21 @@ class ToBase64
 
         response.on 'end', =>
           @base64 = @encode body
+          try $.extend @_ sizeOf(body) catch __
           callback.call @
 
       .on 'error', (error) =>
         callback.call @, error
 
-    else if fs.existsSync(string)
-      @mime = mime.lookup(string)
+    else if fs.existsSync string
+      @mime = mime.lookup string
+      @name = path.basename string, path.extname(string)
+      console.log 'parsing file', @mime, @name
+
       fs.readFile string, (err, data) =>
         return callback.call @, err if err
+
+        try $.extend @_, sizeOf(string) catch __
         @base64 = @encode data
         callback.call @
 
@@ -44,6 +66,7 @@ class ToBase64
       callback.call @
 
   encode: (string, encoding) ->
+    @_.parse.apply @
     return (new Buffer string, encoding).toString('base64')
 
   decode: (string, encoding) ->

@@ -8,7 +8,9 @@ ToBase64 = require './to-base64-core'
 module.exports =
 class ToBase64View extends ScrollView
   @content: ->
-    @div class: 'to-base64 padded pane-item native-key-bindings', tabindex: -1, outlet: 'content'
+    @div class: 'to-base64 padded pane-item native-key-bindings', tabindex: -1, =>
+      @ul class: 'background-message centered', =>
+        @li 'Stay Awhile and Listen...'
 
   initialize: ({@pathToOpen}) ->
     super
@@ -25,10 +27,13 @@ class ToBase64View extends ScrollView
   getTitle: ->
     return 'base64 - ' + path.basename(@pathToOpen)
 
+  getStatus: ->
+    return 'foo'
+
   ready: ->
     b64 = @toBase64
-    $('.to-base64').append $$ ->
-      @parseToBase64 b64
+    $('.to-base64').empty().append $$ ->
+      @parseToBase64 b64, yes
 
   # Returns an object that can be retrieved when package is activated
   #serialize: ->

@@ -6,20 +6,20 @@ CSON = require 'season'
 coffee = require 'coffee-script'
 
 $.extend View,
-  parseToBase64: (base64) ->
+  parseToBase64: (base64, useStatusBar) ->
     _buttons = $$ ->
       @div class: 'btn-group btn-group-xs btn-toggle', =>
         @button class: 'btn selected', 'data-display-class': 'show-to-base64-base64', 'base64'
     _content = $$ ->
       @div class: 'to-base64-content', =>
-        @colorizedCodeBlock 'to-base64-base64 selected', 'text.xml', base64.base64
+        @colorizedCodeBlock 'to-base64-base64 selected', 'text.plain', base64.base64
 
     if base64.mime?
       mtypes = CSON.readFileSync __dirname + '/mime-types.cson'
       get = null
 
       c3po = (data) ->
-        {@width, @height, @base64, @mime} = base64
+        {@name, @width, @height, @base64, @mime, @_} = base64
         @get = get
         foo = coffee.eval '"""'+data.replace(/\t/g, '#{\'  \'}')+'"""'
         return foo
@@ -47,6 +47,7 @@ $.extend View,
 
       btn.addClass('selected')
 
+
     @div =>
       @subview '__', _buttons
       @subview '__', _content
@@ -66,5 +67,5 @@ $.extend View,
       atom.syntax.on 'grammar-added grammar-updated', (grammar) ->
         return unless grammar.scopeName == grammarScopeName
         refreshHtml(grammar)
-    console.warn code, editorBlock
+
     @subview '__', editorBlock
