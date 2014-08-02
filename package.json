@@ -1,9 +1,11 @@
 {
   "name": "to-base64",
   "main": "./lib/to-base64",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Converts any data to base64, furthermore it creates different views like data url if possible.",
-  "activationEvents": ["to-base64:view"],
+  "activationEvents": [
+    "to-base64:view"
+  ],
   "repository": "https://github.com/fentas/atom-to-base64",
   "license": "AGPL-3.0",
   "engines": {
