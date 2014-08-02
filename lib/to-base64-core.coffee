@@ -9,7 +9,7 @@ mime = require 'mime'
 
 module.exports =
 class ToBase64
-  _: null
+  base64: null
 
   mime  : null
   width : null
@@ -26,7 +26,7 @@ class ToBase64
           body += chunk
 
         response.on 'end', =>
-          @_ = @encode body
+          @base64 = @encode body
           callback.call @
 
       .on 'error', (error) =>
@@ -36,11 +36,11 @@ class ToBase64
       @mime = mime.lookup(string)
       fs.readFile string, (err, data) =>
         return callback.call @, err if err
-        @_ = @encode data
+        @base64 = @encode data
         callback.call @
 
     else
-      @_ = @encode string
+      @base64 = @encode string
       callback.call @
 
   encode: (string, encoding) ->
@@ -49,30 +49,5 @@ class ToBase64
   decode: (string, encoding) ->
     return (new Buffer string, 'base64').toString(encoding)
 
-  toString: (encoding) ->
-    return @_
-    ###
-    return switch encoding
-      when 'data' then
-        "data:#{type};base64,#{text}"
-      when 'css' then
-        """
-          div.image {
-            width: #{width}px;
-            height: #{height}px;
-            background-image: URL('#{@base64data base64}')
-          }
-        """
-      when 'xhtml' then
-        """
-          div.image {
-            width: #{width}px;
-            height: #{height}px;
-            background-image: URL('#{@base64data base64}')
-          }
-        """
-      when 'xml' then
-        """
-
-        """
-###
+  toString: () ->
+    return @base64

@@ -10,6 +10,8 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "mime": "~1.2.11"
+    "mime": "*",
+    "season": "*",
+    "coffee-script": "~1.7.0"
   }
 }

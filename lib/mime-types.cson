@@ -1,0 +1,25 @@
+#
+#
+#
+# 'mime type':
+#   'mime subtype': # '_' => default
+#     'method':
+#       'grammar':  # grammar scope name. list: https://gist.github.com/fentas/cc3846891b5f49ed353c#file-gistfile1-md
+#       'content':  # content...
+#
+# You can use following vars in content string
+# @mime  : mime type
+# @width : width in px
+# @height: height in px
+# @get('<<mime type>>', '<<method>>') -> gives parsed content of method
+#
+'image':
+  #default
+  '_':
+    'data':
+      'grammar': 'source.css'
+      'content': 'data:#{@mime};base64,#{@base64}'
+    'css':
+      'grammar': 'source.css'
+      'content': 'div.image {\n\twidth: #{@width};\n\theight: #{@height};\n\tbackground-image: URL("#{@get("image","data")}")\n}'
+  #subtype
