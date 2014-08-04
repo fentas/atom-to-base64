@@ -16,5 +16,10 @@
     "image-size": "*",
     "season": "*",
     "coffee-script": "~1.7.0"
+  },
+  "author": {
+    "name": "Jan Guth",
+    "email": "jan.guth@gmail.com",
+    "url": "jan.guth.so"
   }
 }
