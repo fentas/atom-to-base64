@@ -1,7 +1,7 @@
 {
   "name": "to-base64",
   "main": "./lib/to-base64",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Converts any data to base64, furthermore it creates different views like Data URI if possible.",
   "activationEvents": [
     "to-base64:view",
