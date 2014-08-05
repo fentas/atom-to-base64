@@ -13,19 +13,36 @@ module.exports =
       ToBase64View ?= require './to-base64-view'
       new ToBase64View pathToOpen: uriToOpen.replace(/\.tobase64$/, '')
 
-    atom.workspaceView.command 'to-base64:view', ->
+    selectedFile = ->
       selected = $('.tree-view .file.selected')?.view()
       if selected
         uri = selected.getPath()
-        if uri and fs.existsSync(uri)
-          atom.workspaceView.open("#{uri}.tobase64")
-        else
-          console.warn "File (#{uri}) does not exists"
+        return uri if uri and fs.existsSync(uri)
+        console.warn "File (#{uri}) does not exists"
       else
         console.warn "No file selected"
+      return false
 
-  #deactivate: ->
-  #  @toBase64View.destroy()
+    atom.workspaceView.command 'to-base64:view', ->
+      if uri = selectedFile()
+        atom.workspaceView.open("#{uri}.tobase64")
 
-  #serialize: ->
-  #  toBase64ViewState: @toBase64View.serialize()
+    atom.workspaceView.command 'to-base64:data', ->
+      atom.workspaceView.focus()
+
+      #if uri = selectedFile()
+
+    atom.workspaceView.command "to-base64:encode", =>
+      return unless editor = @getEditor()
+      for selection in editor.getSelections()
+        selection.insertText (new Buffer selection.getText()).toString('base64'), 'select': true
+
+    atom.workspaceView.command "to-base64:decode", =>
+      return unless editor = @getEditor()
+      for selection in editor.getSelections()
+        selection.insertText (new Buffer selection.getText(), 'base64').toString('utf8'), 'select': true
+
+  ## Utility methods
+
+  getEditor: ->
+    atom.workspace.getActiveEditor()

@@ -13,7 +13,7 @@ class ToBase64
   base64: null
 
   _:
-    parse: ->
+    parse: =>
       @_.name = @name
         .replace(/^([a-z_]+)(\d+)?$/i, (m, name)->
           name.replace(/_/g, ' ')
@@ -31,6 +31,9 @@ class ToBase64
 
   constructor: (string, callback) ->
     @path = string
+
+    Object.observe @, (changes) =>
+      @_.parse()
 
     if /(https?|ftp):/.test url.parse(string).protocol
       http.get url.parse(string), (response) =>
@@ -66,7 +69,6 @@ class ToBase64
       callback.call @
 
   encode: (string, encoding) ->
-    @_.parse.apply @
     return (new Buffer string, encoding).toString('base64')
 
   decode: (string, encoding) ->

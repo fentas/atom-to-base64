@@ -1,7 +1,9 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
   '.tree-view .file':
-      'to base64': 'to-base64:view'
+      'To Base64': 'to-base64:view'
+        #'View': 'to-base64:view'
+        #'Insert Data URI': 'to-base64:data'
 
 #'menu': [
 #  {
