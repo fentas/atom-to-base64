@@ -1,5 +1,5 @@
 # to-base64 package
-Converts any data to base64, furthermore it creates different views like data url if possible.
+Converts any data to base64, furthermore it creates different views like Data URI if possible.
 
 ### File encoding
 ![Encode files](http://git.jguth.grus.uberspace.de/atom-to-base64/to-base64:view.gif)
