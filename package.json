@@ -2,7 +2,7 @@
   "name": "to-base64",
   "main": "./lib/to-base64",
   "version": "0.2.0",
-  "description": "Converts any data to base64, furthermore it creates different views like Data URI if possible.",
+  "description": "Converts any data (also https? content) to base64, furthermore it creates different views like Data URI if possible.",
   "activationEvents": [
     "to-base64:view",
     "to-base64:encode",
