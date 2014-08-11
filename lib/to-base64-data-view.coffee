@@ -1,69 +1,115 @@
-{SelectListView, $$} = require 'atom'
+{SelectListView, $$, $} = require 'atom'
 
-require './to-base64-view-extensions'
+PathScanner = require './path-scanner'
 
 path = require 'path'
-fs = require 'fs'
+fs = require 'fs-plus'
+
+# http://james.padolsey.com/javascript/regex-selector-for-jquery/
+$.expr[':'].regex = (elem, index, match)->
+  matchParams = match[3].split(',')
+  validLabels = /^(data|css):/
+  attr = {
+    method: if matchParams[0].match(validLabels) then matchParams[0].split(':')[0] else 'attr',
+    property: matchParams.shift().replace(validLabels,'')
+  }
+  regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), 'ig')
+  return regex.test($(elem)[attr.method](attr.property))
+
 
 module.exports =
 class ToBase64DataView extends SelectListView
-  initialize: (@query, fileRoot, projRoot) ->
+  initialize: (selection, fileRoot, projRoot) ->
     super
+    @selection = if /url\(['"]?(.+?)["']?\)/i.test(selection) then RegExp.$1.trim() else ''
+    if /^data:(.+?);/.test @selection
+      @selection = RegExp.$1
+    else if @selection != '' and ! /(:|^\.|^\/)/.test @selection
+      @selection = './' + @selection
 
-    @query = if /url\(['"]?(.+?)["']?\)/i.test @query then RegExp.$1 else ''
-    if /^data:(.+?);/.test @query
-      @query = RegExp.$1
+    console.info @selection
 
     @listOfItems = ['$1']
 
-    @addClass('overlay from-top select-list')
-    @setItems(@listOfItems)
+    @addClass 'overlay from-top select-list'
+    @setItems @listOfItems
 
     atom.workspaceView.append(this)
     @focusFilterEditor()
 
   # Here you specify the view for an item
   viewForItem: (item) ->
-    console.warn @query, item
-    if @query
-      if /^(https?|ftps?|\/\/)/.test @query
-        console.info RegExp.$1
+    query = if @query.trim() == '' then @selection else @query
+    list = @list
 
-        $$ ->
-          @li class: 'selected', =>
+    $$ ->
+      if query
+
+        if /^(https?|ftps?|\/\/)/.test query
+          @li class: 'two-lines selected', =>
             @div class: 'status status-renamed icon icon-diff-renamed', ''
             @div class: 'primary-line icon icon-file-symlink-file', 'Download file...'
+            @div class: 'secondary-line', query
 
-      else if /^(\.?\.?\/)/.test @query
-        console.info RegExp.$1
-        #file = path.resolve(if RegExp.$1 == '/' then projRoot else fileRoot, $1)
-        if fs.existsSync file
-
-          $$ ->
-            @li class: 'selected', =>
+        else if /^(\.?\.?\/)/.test query
+          file = atom.project.resolve query
+          if file and fs.existsSync file and fs.lstatSync(file).isFile()
+            @li class: 'two-lines selected', =>
               @div class: 'status status-added icon icon-diff-added', ''
               @div class: 'primary-line icon icon-file-text', 'Insert file...'
+              @div class: 'secondary-line', query
+          else
+            @span class: 'inline-block status-ignored icon icon-diff-ignored', ''
+            @div 'File not found...'
 
         else
-          $$ ->
-            @div class: 'text-warning', 'File not found...'
-      else
-        query = @query
-        $$ ->
-          @li =>
-            @div class: 'pull-right key-bindings', =>
-              @colorizedCodeBlock 'key-binding to-base64-search-pattern', 'source.js.regexp', '/' + query + '/i'
-            @span class: 'icon icon-file-text', 'Look for file name...'
+          scanner = new PathScanner(atom.project.getPath(), inclusions: [query])
 
-            if /^[a-z_-]+\/?[a-z_-]*$/i.test(query)
+          scanner.on 'path-found', (filePath) ->
+            ext = path.extname(filePath)
+            if fs.isReadmePath(filePath)
+              typeClass = 'icon-book'
+            else if fs.isCompressedExtension(ext)
+              typeClass = 'icon-file-zip'
+            else if fs.isImageExtension(ext)
+              typeClass = 'icon-file-media'
+            else if fs.isPdfExtension(ext)
+              typeClass = 'icon-file-pdf'
+            else if fs.isBinaryExtension(ext)
+              typeClass = 'icon-file-binary'
+            else
+              typeClass = 'icon-file-text'
+
+            fileBasename = path.basename(filePath)
+
+            _file = $$ ->
               @li =>
-                @div class: 'pull-right key-bindings', =>
-                  @colorizedCodeBlock 'to-base64-search-pattern key-binding', 'source.js.regexp', if /^[a-z_-]+\/[a-z_-]*$/i.test(query) then query else 'image/' + query
-                @span class: 'icon icon-file-text', 'Look for mime type ~ '
+                @div class: "inline-block file icon #{typeClass}", ''
+                @span 'data-name': fileBasename, 'data-path': atom.project.relativize(filePath), fileBasename
+            _file.data('select-list-item', type: 'file', path: filePath)
+            list.append _file
 
-    else
-      $$ ->
-        @div 'test'
+          scanner.on 'finished-scanning', ->
+            console.log('All done!')
+
+          list.empty()
+          scanner.scan()
+          #for file in files
+          #  break unless ++i <= 10
+          #  file = $(file)
+          #  @li =>
+          #    @div class: 'inline-block '+file.attr('class'), ''
+          #    @span 'data-path': file.attr('data-path'), file.attr('data-name')
+
+          #if i > 10
+          #  @li =>
+          #    @div class: 'status-ignored icon icon-diff-ignored', ''
+          #    @span "and #{files.length - i} more..."
+        #  catch e
+        #    console.warn e
+
+      else
+          @div 'test'
 
 
   populateList: ->

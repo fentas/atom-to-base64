@@ -18,7 +18,9 @@
     "mime": "*",
     "image-size": "*",
     "season": "*",
-    "coffee-script": "~1.7.0"
+    "coffee-script": "*",
+    "fs-plus": "*",
+    "minimatch": "~1.x"
   },
   "author": {
     "name": "Jan Guth",

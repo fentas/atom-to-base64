@@ -24,7 +24,7 @@ module.exports =
       atom.workspaceView.focus()
       # grap only first selection for this
       selection = editor.getSelection()
-      text = selection.getText() ? selection.getLine()
+      text = selection.getText()
       text = editor.getCursor().getCurrentBufferLine() if text.trim() == ''
 
       ToBase64DataView ?= require './to-base64-data-view'
