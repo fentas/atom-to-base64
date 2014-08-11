@@ -36,8 +36,8 @@ module.exports =
         e = text.length
         selection.setBufferRange(selectedBufferRange.translate([0, s - c], [0, (s + e) - c]))
 
-        if /^data:(.+?);/.test text
-          text = RegExp.$1
+        if /^data:/.test text
+          text = ''
         else if text != '' and ! /(:|^\.|^\/)/.test text
           text = './' + text
 
