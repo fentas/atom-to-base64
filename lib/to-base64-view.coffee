@@ -33,7 +33,7 @@ class ToBase64View extends ScrollView
   ready: ->
     b64 = @toBase64
     $('.to-base64').empty().append $$ ->
-      @parseToBase64 b64, yes
+      @toBase64View b64, yes
 
   # Returns an object that can be retrieved when package is activated
   #serialize: ->

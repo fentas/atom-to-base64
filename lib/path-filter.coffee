@@ -1,3 +1,8 @@
+#
+# SOURCE:
+# https://github.com/atom/scandal/blob/master/src/path-filter.coffee
+#
+
 {Minimatch} = require 'minimatch'
 path = require 'path'
 

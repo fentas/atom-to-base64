@@ -1,4 +1,5 @@
 #
+# SOURCE:
 # https://github.com/atom/scandal/blob/master/src/path-scanner.coffee
 #
 

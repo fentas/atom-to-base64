@@ -1,7 +1,7 @@
 {$} = require 'atom'
 
 ToBase64View = null
-ToBase64DataView = null
+ToBase64InsertView = null
 
 fs   = require 'fs'
 path = require 'path'
@@ -15,20 +15,34 @@ module.exports =
       new ToBase64View pathToOpen: uriToOpen.replace(/\.tobase64$/, '')
 
 
-    atom.workspaceView.command 'to-base64:view', ->
+    atom.workspaceView.command 'to-base64:view', =>
       if uri = @selectedFile()
         atom.workspaceView.open("#{uri}.tobase64")
 
-    atom.workspaceView.command 'to-base64:data', =>
+    atom.workspaceView.command 'to-base64:insert', =>
       return unless editor = @getEditor()
       atom.workspaceView.focus()
       # grap only first selection for this
       selection = editor.getSelection()
       text = selection.getText()
-      text = editor.getCursor().getCurrentBufferLine() if text.trim() == ''
 
-      ToBase64DataView ?= require './to-base64-data-view'
-      new ToBase64DataView text
+      line = editor.getCursor().getCurrentBufferLine()
+      if ( ! text or text == '' ) and /url\(['"]?(.+?)["']?\)/i.test(line)
+        text = RegExp.$1.trim()
+
+        selectedBufferRange = selection.getBufferRange()
+        c = selectedBufferRange.start.column
+        s = line.indexOf(text)
+        e = text.length
+        selection.setBufferRange(selectedBufferRange.translate([0, s - c], [0, (s + e) - c]))
+
+        if /^data:(.+?);/.test text
+          text = RegExp.$1
+        else if text != '' and ! /(:|^\.|^\/)/.test text
+          text = './' + text
+
+      ToBase64InsertView ?= require './to-base64-insert-view'
+      new ToBase64InsertView text.trim()
 
     atom.workspaceView.command "to-base64:encode", =>
       return unless editor = @getEditor()

@@ -7,7 +7,7 @@
     "to-base64:view",
     "to-base64:encode",
     "to-base64:decode",
-    "to-base64:data"
+    "to-base64:insert"
   ],
   "repository": "https://github.com/fentas/atom-to-base64",
   "license": "AGPL-3.0",
