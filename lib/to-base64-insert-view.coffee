@@ -50,7 +50,7 @@ class ToBase64InsertView extends SelectListView
             @div class: 'primary-line icon icon-file-symlink-file', 'Download file...'
             @div class: 'secondary-line', query
 
-        else if /^(\.?\.?\/)/.test query
+        else if (new RegExp('^(\\.?\\.?\\'+path.sep+')')).test query
           if query[0] == '/'
             filePath = atom.project.resolve '.'+query
           else
@@ -63,7 +63,7 @@ class ToBase64InsertView extends SelectListView
               @div class: 'secondary-line', query
           else
             incl = query.split(path.sep).pop()
-            if incl != '' and ! /^\.{1,2}\/?$/.test incl
+            if incl != '' and ! (new RegExp('^\\.{1,2}\\'+path.sep+'?$')).test incl
               filePath = path.dirname(filePath)
 
             scanner = new PathScanner(filePath, {inclusions: [incl], deep: false, directories: true})

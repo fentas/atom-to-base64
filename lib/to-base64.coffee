@@ -38,7 +38,7 @@ module.exports =
 
         if /^data:/.test text
           text = ''
-        else if text != '' and ! /(:|^\.|^\/)/.test text
+        else if text != '' and ! (new RegExp('(:|^\\.|^\\'+path.sep+')', '')).test text
           text = './' + text
 
       ToBase64InsertView ?= require './to-base64-insert-view'
