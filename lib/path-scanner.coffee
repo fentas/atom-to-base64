@@ -1,5 +1,4 @@
 #
-# SOURCE:
 # https://github.com/atom/scandal/blob/master/src/path-scanner.coffee
 #
 
@@ -93,9 +92,10 @@ class PathScanner extends EventEmitter
     return unless stat
 
     if stat.isFile() and @pathFilter.isFileAccepted(relPath)
-      @emit('path-found', filePath)
+      @emit('path-found', filePath, true)
     else if stat.isDirectory() and @pathFilter.isDirectoryAccepted(relPath)
-      @readDir(filePath)
+      @emit('path-found', filePath, false) if @options.directories == true
+      @readDir(filePath) if @options.deep != false
 
   stat: (filePath) ->
     # lstat is SLOW, but what other way to determine if something is a directory or file ?

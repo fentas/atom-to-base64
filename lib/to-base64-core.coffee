@@ -17,31 +17,30 @@ class ToBase64
   base64: null
 
   _:
-    parse: =>
-      @_.name = @name
-        .replace(/^([a-z_]+)(\d+)?$/i, (m, name)->
-          name.replace(/_/g, ' ')
-          .replace(/(?:^|\s)([a-z])/ig, (m, f)->
-            ' '+f.toUpperCase() ))
-        .trim()
-      @_.weight = @name.replace(/^([a-z_]+)(\d+)?$/i, "$2")
+    parse: ->
+      try
+        @_.name = @name.replace(/^([a-z_]+)(\d+)?$/i, (m, name)->
+          name.replace(/_/g, ' ').replace /(?:^|\s)([a-z])/ig, (m, f)->
+            ' '+f.toUpperCase()
+          ).trim()
+        @_.weight = @name.replace(/^([a-z_]+)(\d+)?$/i, "$2")
+      catch e
+        @_.name = ''
       @_.weight = 'normal' if ! /^\d+$/.test @_.weight
       @_.width ?= ''
       @_.height ?= ''
 
-  type  : null
-  path  : ''
-  name  : ''
-  mime  : ''
+  path: ''
+  name: ''
+  mime: ''
 
   constructor: (string, callback, data) ->
     @path = string
 
-    Object.observe @, (changes) =>
-      @_.parse()
+    Object.observe this, (changes) =>
+      @_.parse.apply this
 
     if /^(?:(https?)\:)?\/\//.test string
-      @type = 'http'
       http = require RegExp.$1
       http.get string, (response) =>
         return callback.call @, response unless response.statusCode is 200
@@ -49,21 +48,20 @@ class ToBase64
         @mime = response.headers['content-type']
         length = response.headers['content-length']
         chunks = []
-        response.on 'data', (chunk) ->
+        response.on 'data', (chunk) =>
           chunks.push chunk
           data.call(@, length) if typeof data == 'function'
 
         response.on 'end', =>
           buffer = Buffer.concat chunks
           @base64 = buffer.toString('base64')
-          try $.extend @_ sizeOf(buffer) catch e
+          $.extend @_, sizeOf(buffer)
           callback.call @
 
       .on 'error', (error) =>
         callback.call @, error
 
     else if fs.existsSync string
-      @type = 'file'
       @mime = mime.lookup string
       @name = path.basename string, path.extname(string)
       console.log 'parsing file', @mime, @name

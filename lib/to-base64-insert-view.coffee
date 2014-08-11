@@ -30,6 +30,17 @@ class ToBase64InsertView extends SelectListView
     setLoading = (message)=> @setLoading message
     setLoading()
 
+    noResults = ->
+      setLoading()
+      list.empty()
+      list.append $$ ->
+        @pre =>
+          @div class: 'inline-block status-ignored icon icon-diff-ignored', ''
+          @span 'Nothing found...'
+        @pre =>
+          @div class: 'inline-block status-ignored no-icon', ''
+          @span 'Use glop expressions (e.g. `*.+(png|jpeg)`)'
+
     $$ ->
       if query
 
@@ -41,7 +52,7 @@ class ToBase64InsertView extends SelectListView
 
         else if /^(\.?\.?\/)/.test query
           if query[0] == '/'
-            filePath = atom.project.resolve query
+            filePath = atom.project.resolve '.'+query
           else
             filePath = path.resolve path.dirname(atom.workspace.getActiveEditor().getPath()), query
 
@@ -51,21 +62,46 @@ class ToBase64InsertView extends SelectListView
               @div class: "primary-line icon #{typeClass(filePath)}", 'Insert file...'
               @div class: 'secondary-line', query
           else
-            @pre =>
-              @div class: 'inline-block status-ignored file icon icon-diff-ignored', ''
-              @span 'File not found...'
+            incl = query.split(path.sep).pop()
+            if incl != '' and ! /^\.{1,2}\/?$/.test incl
+              filePath = path.dirname(filePath)
+
+            scanner = new PathScanner(filePath, {inclusions: [incl], deep: false, directories: true})
+            setLoading("Listing files...")
+            fileCount = 0
+            scanner.on 'path-found', (itemPath, isFile) ->
+              loadingBadge.text(++fileCount)
+
+              if isFile
+                fileBasename = path.basename(itemPath)
+                _file = $$ ->
+                  @li =>
+                    @div class: "inline-block file icon #{typeClass(itemPath)}", ''
+                    @span 'data-name': fileBasename, 'data-path': atom.project.relativize(itemPath), fileBasename
+                _file.data('select-list-item', itemPath)
+                if list.find('.file:last').length
+                  _file.insertAfter list.find('.file:last').parent()
+                else
+                  list.prepend _file
+              else
+                folder = itemPath.split(path.sep).pop()
+                _file = $$ ->
+                  @li =>
+                    @div class: "inline-block icon icon-file-directory", ''
+                    @span 'data-name': folder, 'data-path': atom.project.relativize(itemPath), folder
+                _path = query.split(path.sep)
+                _path.pop()
+                _file.data('select-list-item', {type: 'folder', path: _path.join(path.sep)+path.sep+folder+path.sep})
+                list.append _file
+
+            scanner.on 'finished-scanning', ->
+              return noResults() if list[0].children.length == 0
+              setLoading ''
+
+            list.empty()
+            scanner.scan()
 
         else
-          noResults = ->
-            setLoading()
-            list.empty()
-            list.append $$ ->
-              @pre =>
-                @div class: 'inline-block status-ignored icon icon-diff-ignored', ''
-                @span 'Nothing found...'
-              @pre =>
-                @div class: 'inline-block status-ignored no-icon', ''
-                @span 'Use glop expressions (e.g. `*.+(png|jpeg)`)'
 
           if query.length > 1
             scanner = new PathScanner(atom.project.getPath(), inclusions: [query])
@@ -112,6 +148,9 @@ class ToBase64InsertView extends SelectListView
     ''
 
   confirmed: (item) ->
+    if item.type && item.type == 'folder'
+      return @filterEditorView.getEditor().setText(item.path)
+
     item = @list.find('li.selected').attr('select-list-item') if item == '$1'
     ToBase64InsertAsView ?= require './to-base64-insert-as-view'
     new ToBase64InsertAsView(item)
