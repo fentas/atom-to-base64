@@ -1,3 +1,4 @@
+atom = require 'atom'
 {$} = require 'atom-space-pen-views'
 
 http = require 'http'
@@ -10,7 +11,7 @@ sizeOf = require 'image-size'
 CSON = require 'season'
 coffee = require 'coffee-script'
 
-mtypes = CSON.readFileSync __dirname + '/mime-types.cson'
+mtypes = CSON.readFileSync __dirname + '/mime-types.cson' # CSON.readFileSync atom.config.get('mtypes')
 
 module.exports =
 class ToBase64

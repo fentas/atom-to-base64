@@ -6,6 +6,8 @@ ToBase64InsertView = null
 fs   = require 'fs'
 path = require 'path'
 
+#mtypes = fs.readFileSync __dirname + '/mime-types.cson', encoding: 'utf8'
+
 module.exports =
   activate: (state) ->
     atom.workspace.addOpener (uriToOpen) ->
@@ -72,3 +74,10 @@ module.exports =
 
   parseURI: (string) ->
     return false
+
+#  config:
+#    mtypes:
+#      title: 'Supported MIME types'
+#      description: 'What kind of views (or insert options) you get.'
+#      type: 'string'
+#      default: mtypes
