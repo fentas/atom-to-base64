@@ -35,48 +35,50 @@ class ToBase64
   mime: ''
 
   constructor: (string, callback, data) ->
-    @path = string
+    #TODO: remove construct - use promise function instead
+    setTimeout ( =>
+      @path = string
 
-    Object.observe this, (changes) =>
-      @_.parse.apply this
+      Object.observe this, (changes) =>
+        @_.parse.apply this
 
-    if /^(?:(https?)\:)?\/\//.test string
-      http = require RegExp.$1
-      http.get string, (response) =>
-        return callback.call @, response unless response.statusCode is 200
+      if /^(?:(https?)\:)?\/\//.test string
+        http = require RegExp.$1
+        http.get string, (response) =>
+          return callback.call @, response unless response.statusCode is 200
 
-        @mime = response.headers['content-type']
-        length = response.headers['content-length']
-        chunks = []
-        response.on 'data', (chunk) =>
-          chunks.push chunk
-          data.call(@, length) if typeof data == 'function'
+          @mime = response.headers['content-type']
+          length = response.headers['content-length']
+          chunks = []
+          response.on 'data', (chunk) =>
+            chunks.push chunk
+            data.call(@, length) if typeof data == 'function'
 
-        response.on 'end', =>
-          buffer = Buffer.concat chunks
-          @base64 = buffer.toString('base64')
-          $.extend @_, sizeOf(buffer)
+          response.on 'end', =>
+            buffer = Buffer.concat chunks
+            @base64 = buffer.toString('base64')
+            $.extend @_, sizeOf(buffer)
+            callback.call @
+
+        .on 'error', (error) =>
+          callback.call @, error
+
+      else if fs.existsSync string
+        @mime = mime.lookup string
+        @name = path.basename string, path.extname(string)
+        # console.log 'parsing file', @mime, @name
+
+        fs.readFile string, (err, data) =>
+          return callback.call @, err if err
+
+          try $.extend @_, sizeOf(string) catch __
+          @base64 = @encode data
           callback.call @
 
-      .on 'error', (error) =>
-        callback.call @, error
-
-    else if fs.existsSync string
-      @mime = mime.lookup string
-      @name = path.basename string, path.extname(string)
-      # console.log 'parsing file', @mime, @name
-
-      fs.readFile string, (err, data) =>
-        return callback.call @, err if err
-
-        try $.extend @_, sizeOf(string) catch __
-        @base64 = @encode data
+      else
+        @base64 = @encode string
         callback.call @
-
-    else
-      @base64 = @encode string
-      callback.call @
-
+    ), 1
   encode: (string, encoding) ->
     return (new Buffer string, encoding).toString('base64')
 

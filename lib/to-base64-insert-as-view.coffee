@@ -13,7 +13,6 @@ class ToBase64InsertAsView extends SelectListView
     @panel.show()
     @focusFilterEditor()
 
-    i = 0
     @base64 = new ToBase64 item, ((error)=>
       return @setError(error) if error
       @listOfItems = [label: 'base64', data: content: @base64.base64]

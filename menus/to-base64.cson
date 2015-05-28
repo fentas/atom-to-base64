@@ -7,8 +7,9 @@
     {
       'label': 'To Base64'
       submenu: [
-        {label: 'Encode', command: 'to-base64:encode'}
-        {label: 'Decode', command: 'to-base64:decode'}
+        {label: 'encode', command: 'to-base64:encode'}
+        {label: 'decode', command: 'to-base64:decode'}
+        {label: 'insert', command: 'to-base64:insert'}
       ]
     }
   ]

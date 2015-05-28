@@ -58,7 +58,7 @@ class ToBase64InsertView extends SelectListView
             filePath = path.resolve path.dirname(atom.workspace.getActiveTextEditor().getPath()), query
 
           if filePath and fs.existsSync(filePath) and fs.lstatSync(filePath).isFile()
-            @li class: 'two-lines selected', 'select-list-item': query, =>
+            @li class: 'two-lines selected', 'select-list-item': filePath, =>
               @div class: 'status status-added icon icon-diff-added', ''
               @div class: "primary-line icon #{typeClass(filePath)}", 'Insert file...'
               @div class: 'secondary-line', query
