@@ -1,4 +1,4 @@
-{$} = require 'atom'
+{$} = require 'atom-space-pen-views'
 
 http = require 'http'
 
@@ -64,7 +64,7 @@ class ToBase64
     else if fs.existsSync string
       @mime = mime.lookup string
       @name = path.basename string, path.extname(string)
-      console.log 'parsing file', @mime, @name
+      # console.log 'parsing file', @mime, @name
 
       fs.readFile string, (err, data) =>
         return callback.call @, err if err

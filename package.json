@@ -3,12 +3,16 @@
   "main": "./lib/to-base64",
   "version": "0.3.0",
   "description": "Converts any data (also https? content) to base64, furthermore it creates different views like Data URI if possible.",
-  "activationEvents": [
-    "to-base64:view",
-    "to-base64:encode",
-    "to-base64:decode",
-    "to-base64:insert"
-  ],
+  "activationCommands": {
+    "atom-text-editor": [
+      "to-base64:encode",
+      "to-base64:decode",
+      "to-base64:insert"
+    ],
+    "atom-workspace": [
+      "to-base64:view"
+    ]
+  },
   "repository": "https://github.com/fentas/atom-to-base64",
   "license": "AGPL-3.0",
   "engines": {
@@ -20,7 +24,9 @@
     "season": "*",
     "coffee-script": "*",
     "fs-plus": "*",
-    "minimatch": "~1.x"
+    "minimatch": "~1.x",
+    "atom-space-pen-views": "^2.0.3",
+    "highlights": "^1.0.0"
   },
   "author": {
     "name": "Jan Guth",

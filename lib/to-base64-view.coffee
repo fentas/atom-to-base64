@@ -1,4 +1,4 @@
-{$, $$, ScrollView} = require 'atom'
+{$, $$, ScrollView} = require 'atom-space-pen-views'
 
 path = require 'path'
 
@@ -18,7 +18,7 @@ class ToBase64View extends ScrollView
     @toBase64 = new ToBase64 @pathToOpen, (error) =>
       @ready()
 
-  afterAttach: ->
+  attached: ->
     # keep settings
     $('.to-base64').css
       'font-family': atom.config.get('editor.fontFamily')

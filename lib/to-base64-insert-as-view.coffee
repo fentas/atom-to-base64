@@ -1,4 +1,4 @@
-{SelectListView, $$, $} = require 'atom'
+{$, $$, SelectListView} = require 'atom-space-pen-views'
 
 ToBase64 = require './to-base64-core'
 
@@ -7,9 +7,10 @@ class ToBase64InsertAsView extends SelectListView
   initialize: (item) ->
     super
 
-    @addClass 'overlay from-top select-list'
+    @addClass 'command-palette'
     @setLoading 'Stay Awhile and Listen...'
-    atom.workspaceView.append(this)
+    @panel ?= atom.workspace.addModalPanel(item: this)
+    @panel.show()
     @focusFilterEditor()
 
     i = 0
@@ -45,4 +46,10 @@ class ToBase64InsertAsView extends SelectListView
     @cancel()
 
   getEditor: ->
-    atom.workspace.getActiveEditor()
+    atom.workspace.getActiveTextEditor()
+
+  cancelled: ->
+    @hide()
+
+  hide: ->
+    @panel?.hide()

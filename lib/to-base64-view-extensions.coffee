@@ -1,4 +1,7 @@
-{$, $$, $$$, EditorView, View} = require 'atom'
+{$, $$, $$$, EditorView, View} = require 'atom-space-pen-views'
+#Highlights = require 'highlights'
+
+highlighter = null
 
 $.extend View,
   toBase64View: (base64, useStatusBar) ->
@@ -7,19 +10,21 @@ $.extend View,
         @button class: 'btn selected', 'data-display-class': 'show-to-base64-base64', 'base64'
     _content = $$ ->
       @div class: 'to-base64-content', =>
-        @colorizedCodeBlock 'to-base64-base64 selected', 'text.plain', base64.base64
+        #@colorizedCodeBlock 'to-base64-base64 selected', 'text.plain', base64.base64
+        @pre class: 'to-base64-base64 selected base64-text-editor', base64.base64
 
     for lang, data of base64.get()
       _buttons.append $$ -> @button class: 'btn', 'data-display-class': 'show-to-base64-'+lang, lang
       # @div => ... workaround https://github.com/atom/space-pen/issues/48
-      _content.append $$ -> @div => @colorizedCodeBlock 'to-base64-'+lang, data.grammar, base64.c3po(data.content)
+      #_content.append $$ -> @div => @colorizedCodeBlock 'to-base64-'+lang, data.grammar, base64.c3po(data.content)
+      _content.append $$ -> @pre class: 'to-base64-'+lang+' base64-text-editor', base64.c3po(data.content)
 
     _buttons.find('.btn').bind 'click', ->
       btn = $(this)
       base = btn.parents('.to-base64')
       clas = btn.attr('data-display-class')
 
-      base.find('.btn, .editor').removeClass('selected')
+      base.find('.btn, .base64-text-editor').removeClass('selected')
       base.attr 'class', base[0].className.replace(/\s*show-.+?(\s|$)/g, '')
       base.addClass(clas)
       base.find('.'+clas.replace(/^show\-/, '')).addClass('selected')
@@ -32,19 +37,16 @@ $.extend View,
       @subview '__', _content
 
   colorizedCodeBlock: (cssClass, grammarScopeName, code) ->
-    editorBlock = $$ ->
-      @pre class: cssClass+' editor-colors editor', ''
+    highlighter ?= new Highlights(registry: atom.grammars)
+    highlightedHtml = highlighter.highlightSync
+      fileContents: code
+      scopeName: grammarScopeName
 
-    refreshHtml = (grammar) ->
-      editorBlock.empty()
-      for tokens in grammar.tokenizeLines(code)
-        editorBlock.append(EditorView.buildLineHtml({tokens, text: code}))
+    highlightedBlock = $(highlightedHtml)
+    # The `editor` class messes things up as `.editor` has absolutely positioned lines
+    highlightedBlock.removeClass('editor')
+    highlightedBlock.addClass(cssClass + ' base64-text-editor')
+    if fontFamily = atom.config.get('editor.fontFamily')
+      highlightedBlock.css('font-family', fontFamily)
 
-    if grammar = atom.syntax.grammarForScopeName(grammarScopeName)
-      refreshHtml(grammar)
-    else
-      atom.syntax.on 'grammar-added grammar-updated', (grammar) ->
-        return unless grammar.scopeName == grammarScopeName
-        refreshHtml(grammar)
-
-    @subview '__', editorBlock
+    @subview '__', highlightedBlock

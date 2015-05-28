@@ -1,4 +1,4 @@
-{SelectListView, $$, $} = require 'atom'
+{$, $$, SelectListView} = require 'atom-space-pen-views'
 
 PathScanner = require './path-scanner'
 
@@ -14,10 +14,11 @@ class ToBase64InsertView extends SelectListView
 
     @listOfItems = ['$1']
 
-    @addClass 'overlay from-top select-list'
-    @setItems @listOfItems
+    @addClass 'command-palette'#'overlay from-top select-list'
+    @panel ?= atom.workspace.addModalPanel(item: this)
+    @panel.show()
 
-    atom.workspaceView.append(this)
+    @setItems @listOfItems
     @focusFilterEditor()
 
   # Here you specify the view for an item
@@ -52,9 +53,9 @@ class ToBase64InsertView extends SelectListView
 
         else if (new RegExp('^(\\.?\\.?\\'+path.sep+')')).test query
           if query[0] == '/'
-            filePath = atom.project.resolve '.'+query
+            filePath = atom.project.getDirectories()[0]?.resolve('.'+query)
           else
-            filePath = path.resolve path.dirname(atom.workspace.getActiveEditor().getPath()), query
+            filePath = path.resolve path.dirname(atom.workspace.getActiveTextEditor().getPath()), query
 
           if filePath and fs.existsSync(filePath) and fs.lstatSync(filePath).isFile()
             @li class: 'two-lines selected', 'select-list-item': query, =>
@@ -66,6 +67,7 @@ class ToBase64InsertView extends SelectListView
             if incl != '' and ! (new RegExp('^\\.{1,2}\\'+path.sep+'?$')).test incl
               filePath = path.dirname(filePath)
 
+            console.warn filePath
             scanner = new PathScanner(filePath, {inclusions: [incl], deep: false, directories: true})
             setLoading("Listing files...")
             fileCount = 0
@@ -104,7 +106,7 @@ class ToBase64InsertView extends SelectListView
         else
 
           if query.length > 1
-            scanner = new PathScanner(atom.project.getPath(), inclusions: [query])
+            scanner = new PathScanner(atom.project.getPaths(), inclusions: [query])
             fileCount = 0
             setLoading("Searching for files...")
             scanner.on 'path-found', (filePath) ->
@@ -149,7 +151,7 @@ class ToBase64InsertView extends SelectListView
 
   confirmed: (item) ->
     if item.type && item.type == 'folder'
-      return @filterEditorView.getEditor().setText(item.path)
+      return @filterEditorView.setText(item.path)
 
     item = @list.find('li.selected').attr('select-list-item') if item == '$1'
     ToBase64InsertAsView ?= require './to-base64-insert-as-view'
@@ -170,3 +172,9 @@ class ToBase64InsertView extends SelectListView
     else
       typeClass = 'icon-file-text'
     return typeClass
+
+  cancelled: ->
+    @hide()
+
+  hide: ->
+    @panel?.hide()
