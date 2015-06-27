@@ -44,7 +44,6 @@ class ToBase64InsertView extends SelectListView
 
     $$ ->
       if query
-
         if /^(https?:)?\/\//.test query
           @li class: 'two-lines selected', 'select-list-item': query, =>
             @div class: 'status status-renamed icon icon-diff-renamed', ''
@@ -67,7 +66,6 @@ class ToBase64InsertView extends SelectListView
             if incl != '' and ! (new RegExp('^\\.{1,2}\\'+path.sep+'?$')).test incl
               filePath = path.dirname(filePath)
 
-            console.warn filePath
             scanner = new PathScanner(filePath, {inclusions: [incl], deep: false, directories: true})
             setLoading("Listing files...")
             fileCount = 0
@@ -104,9 +102,8 @@ class ToBase64InsertView extends SelectListView
             scanner.scan()
 
         else
-
           if query.length > 1
-            scanner = new PathScanner(atom.project.getPaths(), inclusions: [query])
+            scanner = new PathScanner(atom.project.getPaths()[0], inclusions: [query])
             fileCount = 0
             setLoading("Searching for files...")
             scanner.on 'path-found', (filePath) ->
@@ -115,9 +112,9 @@ class ToBase64InsertView extends SelectListView
               fileBasename = path.basename(filePath)
 
               _file = $$ ->
-                @li =>
-                  @div class: "inline-block file icon #{typeClass(filePath)}", ''
-                  @span 'data-name': fileBasename, 'data-path': atom.project.relativize(filePath), fileBasename
+                @li class: "two-lines", =>
+                  @div class: "primary-line icon #{typeClass(filePath)}", 'data-name': fileBasename, 'data-path': atom.project.relativize(filePath), fileBasename
+                  @div class: "secondary-line", atom.project.relativize(filePath)
               _file.data('select-list-item', filePath)
               list.append _file
 
