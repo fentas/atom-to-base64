@@ -1,7 +1,7 @@
 {
   "name": "to-base64",
   "main": "./lib/to-base64",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Converts any data (also https? content) to base64, furthermore it creates different views like Data URI if possible.",
   "activationCommands": {
     "atom-text-editor": [
