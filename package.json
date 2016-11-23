@@ -19,13 +19,14 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "mime": "*",
-    "image-size": "*",
-    "season": "*",
+    "atom-space-pen-views": "^2.2.0",
     "coffee-script": "*",
     "fs-plus": "*",
+    "highlights": "^1.4.1",
+    "image-size": "*",
+    "mime": "*",
     "minimatch": "~1.x",
-    "atom-space-pen-views": "^2.0.3"
+    "season": "*"
   },
   "author": {
     "name": "Jan Guth",

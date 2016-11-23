@@ -37,11 +37,13 @@ class ToBase64
 
   constructor: (string, callback, data) ->
     #TODO: remove construct - use promise function instead
-    setTimeout ( =>
+    #setTimeout ( =>
       @path = string
 
-      Object.observe this, (changes) =>
-        @_.parse.apply this
+      #Depricated: https://github.com/fentas/atom-to-base64/issues/4
+      #Object.observe this, (changes) =>
+      #  @_.parse.apply this
+      @_.parse.apply this
 
       if /^(?:(https?)\:)?\/\//.test string
         http = require RegExp.$1
@@ -67,7 +69,7 @@ class ToBase64
       else if fs.existsSync string
         @mime = mime.lookup string
         @name = path.basename string, path.extname(string)
-        # console.log 'parsing file', @mime, @name
+        @_.parse.apply this
 
         fs.readFile string, (err, data) =>
           return callback.call @, err if err
@@ -79,7 +81,7 @@ class ToBase64
       else
         @base64 = @encode string
         callback.call @
-    ), 1
+    #), 1
   encode: (string, encoding) ->
     return (new Buffer string, encoding).toString('base64')
 

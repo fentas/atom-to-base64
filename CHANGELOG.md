@@ -1,3 +1,8 @@
+## 0.4.3
+* Bugfixing
+* Syntax highlighting in Base64 file view
+* Update dependencies
+
 ## 0.4.0
 * Update to Atom 1.0 final api
 
