@@ -1,4 +1,5 @@
-# to-base64 package
+# to-base64 package [![dependency status](https://david-dm.org/fentas/atom-to-base64.svg)](https://david-dm.org/fentas/atom-to-base64) [![devDependency Status](https://david-dm.org/fentas/atom-to-base64/dev-status.svg)](https://david-dm.org/fentas/atom-to-base64#info=devDependencies)
+
 Converts any data (also https? content) to base64, furthermore it creates different views like Data URI if possible.
 
 ### 1. File encoding
