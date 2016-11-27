@@ -46,6 +46,16 @@
         #{'  '}font-family: "#{@_.name}";
         #{'  '}font-weight: #{@_.weight};
         #{'  '}src: local("#{@_.name}"), URL("#{@get("application/font-woff","data")}") format("woff");\n}'''
+  'vnd.ms-fontobject':
+    'data':
+      'grammar': 'text.plain'
+      'content': 'data:#{@mime};base64,#{@base64}'
+    'css':
+      'grammar': 'source.css'
+      'content': '''@font-face {
+        #{'  '}font-family: "#{@_.name}";
+        #{'  '}font-weight: #{@_.weight};
+        #{'  '}src: local("#{@_.name}"), URL("#{@get("application/vnd.ms-fontobject","data")}") format("vnd.ms-fontobject");\n}'''
 
   'x-font-ttf':
     'data':

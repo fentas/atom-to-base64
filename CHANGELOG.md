@@ -1,4 +1,8 @@
-## 0.4.3
+## 0.5.1
+* Update dependencies
+* Fixing: download content (https) error message
+
+## 0.5.0
 * Bugfixing
 * Syntax highlighting in Base64 file view
 * Update dependencies

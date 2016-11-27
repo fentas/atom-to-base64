@@ -19,7 +19,7 @@ class ToBase64InsertAsView extends SelectListView
       for lang, data of @base64.get()
         @listOfItems[if lang == 'data' then 'unshift' else 'push'](label: lang, data: data)
       @setLoading ''
-      @setItems @listOfItems), (length)=> @loadingBadge.text 'Chunk '+(++i)+' ~ Size '+(Math.floor(length / 1024 * 100)/100)+'KB'
+      @setItems @listOfItems), (length)=> @loadingBadge.text ' ~ Size '+(Math.floor(length / 1024 * 100)/100)+'KB' #Chunk '+(++i)+'
 
   # Here you specify the view for an item
   viewForItem: (item) ->
