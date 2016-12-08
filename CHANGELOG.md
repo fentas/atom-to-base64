@@ -1,3 +1,6 @@
+## 0.5.2
+* Removed highlighting until fixed: https://github.com/fentas/atom-to-base64/issues/5
+
 ## 0.5.1
 * Update dependencies
 * Fixing: download content (https) error message
